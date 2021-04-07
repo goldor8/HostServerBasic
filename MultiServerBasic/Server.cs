@@ -104,12 +104,13 @@ namespace MultiServerBasic {
                 {
                     if (_clients.ContainsKey(i))
                     {
-                        if (_clients[i].Udp.EndPoint == null)
-                        {
-                            _clients[i].Udp.Connect(senderIP);
-                        }
+                        
                         if (_clients[i].ID == fromClient)
                         {
+                            if (_clients[i].Udp.EndPoint == null)
+                            {
+                                _clients[i].Udp.Connect(senderIP);
+                            }
                             _clients[i].HandlePacket(packet);
                         }
                     }
@@ -176,6 +177,7 @@ namespace MultiServerBasic {
             {
                 if (exceptedConnectionID != _clients[i].ID)
                 {
+                    Console.WriteLine($"sending {exceptedConnectionID} to {i}");
                     _clients[i].Tcp.SendPacket(packet,true);
                 }
             }

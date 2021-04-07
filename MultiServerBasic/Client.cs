@@ -130,14 +130,19 @@ namespace MultiServerBasic
                 {
                     Console.WriteLine("sending TCP packet with id : "+id);
                 }
-                packet.InsertInt(packet.GetLenght());
+                
+                Packet packetToSend = new Packet(packet.ReadAllBytes());
+                packetToSend.InsertInt(packet.GetLenght());
+                //packet.InsertInt(packet.GetLenght());
                 //If connection always exist.
                 if (_socket != null) {
-                    _stream.BeginWrite(packet.ReadAllBytes(), 0, packet.GetLenght(), null, null); //Send data to the client.
+                    _stream.BeginWrite(packetToSend.ReadAllBytes(), 0, packetToSend.GetLenght(), null, null); //Send data to the client.
                 }
                 else {
                     Console.WriteLine("TCP client with client ID : "+_client.ID+" isn't connected, cannot send data");
                 }
+                packetToSend.Dispose();
+                
                 if(!reUsePacket) packet.Dispose();
             }
             
@@ -177,6 +182,7 @@ namespace MultiServerBasic
                 if (isUdpClientConnected)
                 {
                     _client._server.SendUDPPacket(EndPoint,packet); //Ask the server tu send UDP data
+                    Console.WriteLine($"sending udp data to {_client.ID} packet id : {packet.ReadInt(false)}");
                     if(!reUsePacket) packet.Dispose();
                 }
                 else
@@ -190,12 +196,12 @@ namespace MultiServerBasic
         /// <param name="packet">Packet to read.</param>
         public void HandlePacket(Packet packet) {
             //make sure the action will be executed in the right order.
-            _server.GetThreadManager().ExecuteOnMainThread(() => {
+            //_server.GetThreadManager().ExecuteOnMainThread(() => {
                     
                 int packetID = packet.ReadInt(true); //Read the packet ID.
                 _server.PacketHandlers[packetID](packet,ID); //Execute the function assign to this packet ID.
                     
-            });
+            //});
         }
         
     }

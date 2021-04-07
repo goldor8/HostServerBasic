@@ -1,4 +1,6 @@
-﻿namespace MultiServerBasic
+﻿using System.Management.Instrumentation;
+
+namespace MultiServerBasic
 {
     using System;
     using System.Collections.Generic;
@@ -58,6 +60,7 @@
         public void InsertInt(int intData)
         {
             _editBuffer.InsertRange(0, BitConverter.GetBytes(intData));
+            ActualiseReadBuffer();
         }
         
         public void Write(Byte[] bytesData)
@@ -104,8 +107,7 @@
 
         public Byte[] ReadAllBytes()
         {
-            ActualiseReadBuffer();
-            
+
             if (_readBuffer.Length > 0)
             {
                 return _readBuffer;
@@ -210,7 +212,15 @@
             }
             else
             {
-                throw new Exception("No more bytes to read type 'int'");
+                Console.Write("Here the errored packet [");
+                foreach (byte b in ReadAllBytes())
+                {
+                    Console.Write($"{b},");
+                }
+                Console.Write("]\n");
+                Console.WriteLine($"Read pos : {_readPos}");
+                return 0;
+                //throw new Exception("No more bytes to read type 'int'");
             }
         }
         

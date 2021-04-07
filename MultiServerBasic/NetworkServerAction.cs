@@ -31,6 +31,7 @@ namespace MultiServerBasic
         {
             Packet NewPlayer = new Packet((int) Packet.ServerPacketIDReference.NewPlayer);
             NewPlayer.Write(playerClientID);
+            Console.WriteLine($"new player : {NewPlayer.ReadInt(false)}");
             _server.SendTCPMessageToAllConnections(NewPlayer,playerClientID);
         }
         
